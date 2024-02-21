@@ -39,8 +39,7 @@ func getDeregistrationRequest(ue *context.UEContext) (nasPdu []byte) {
 	deregistrationRequest.SetReRegistrationRequired(0)
 	deregistrationRequest.SetAccessType(1)
 	deregistrationRequest.DeregistrationRequestMessageIdentity.SetMessageType(nas.MsgTypeDeregistrationRequestUEOriginatingDeregistration)
-	deregistrationRequest.NgksiAndDeregistrationType.SetTSC(nasMessage.TypeOfSecurityContextFlagNative)
-	deregistrationRequest.NgksiAndDeregistrationType.SetNasKeySetIdentifiler(ue.GetUeId())
+  deregistrationRequest.NgksiAndDeregistrationType.SetNasKeySetIdentifiler(uint8(ue.UeSecurity.NgKsi.Ksi))
 	// If AMF previously assigned the UE a 5G-GUTI, reuses it
 	// If the 5G-GUTI is no longer valid, AMF will issue an Identity Request
 	// which we'll answer with the requested Mobility Identity (eg. SUCI)
@@ -54,6 +53,7 @@ func getDeregistrationRequest(ue *context.UEContext) (nasPdu []byte) {
 	} else {
 		deregistrationRequest.MobileIdentity5GS = ue.GetSuci()
 	}
+
 	m.GmmMessage.DeregistrationRequestUEOriginatingDeregistration = deregistrationRequest
 
 	data := new(bytes.Buffer)
